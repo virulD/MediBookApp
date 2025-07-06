@@ -1,14 +1,12 @@
-name: Build Android APK
+name: Create Release
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
+    tags:
+      - 'v*'
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
     
     steps:
@@ -55,25 +53,18 @@ jobs:
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
         GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m"
         
-    - name: Check APK exists
-      run: |
-        if [ -f "android/app/build/outputs/apk/release/app-release.apk" ]; then
-          echo "✅ APK created successfully"
-          ls -lh android/app/build/outputs/apk/release/app-release.apk
-        else
-          echo "❌ APK not found"
-          exit 1
-        fi
-        
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: MediBookApp-APK
-        path: android/app/build/outputs/apk/release/app-release.apk
-        retention-days: 30
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
         
-    - name: Upload APK to Release (if tag)
-      if: startsWith(github.ref, 'refs/tags/')
+    - name: Upload APK to Release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
