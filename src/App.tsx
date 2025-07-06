@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import { DataProvider } from './DataContext';
 
 // Import screens
@@ -33,7 +33,7 @@ export default function App() {
   return (
     <DataProvider>
       <NavigationContainer>
-        <StatusBar style="auto" />
+        <StatusBar barStyle="dark-content" backgroundColor="#4A90E2" />
         <Stack.Navigator
           initialRouteName="Landing"
           screenOptions={{

@@ -27,9 +27,18 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
-    - name: Install dependencies
-      run: npm ci
-      
+    - name: Clean install dependencies
+      run: |
+        rm -rf node_modules
+        rm -rf package-lock.json
+        npm ci
+        
+    - name: Clear Metro cache
+      run: |
+        npx react-native start --reset-cache &
+        sleep 10
+        pkill -f "react-native start"
+        
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
       
@@ -46,11 +55,15 @@ jobs:
     - name: Make Gradlew executable
       run: chmod +x android/gradlew
       
+    - name: Test JS bundle creation
+      run: |
+        npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/
+        
     - name: Build Android APK
       run: |
         cd android
         ./gradlew clean
-        ./gradlew assembleRelease --stacktrace
+        ./gradlew assembleRelease --stacktrace --info
       env:
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
         GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m"
