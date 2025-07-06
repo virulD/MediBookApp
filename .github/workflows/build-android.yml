@@ -30,7 +30,6 @@ jobs:
     - name: Clean install dependencies
       run: |
         rm -rf node_modules
-        rm -rf package-lock.json
         npm ci
         
     - name: Clear Metro cache
