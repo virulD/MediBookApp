@@ -48,7 +48,7 @@ jobs:
       run: |
         cd android
         ./gradlew clean
-        ./gradlew assembleRelease --stacktrace
+        ./gradlew assembleRelease --stacktrace --info --warning-mode all
       env:
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
         GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4096m"
